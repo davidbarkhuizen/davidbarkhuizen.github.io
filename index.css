@@ -1,5 +1,6 @@
 .container {
     max-height: 100vh; 
+    min-height: 100vh; 
 
     display: flex;
     flex-flow: row nowrap;
@@ -13,8 +14,12 @@
     order: 0;
     flex-basis: 20%;
 
-    padding: 10px;
+    margin: 10px;
     overflow-y: scroll;
+}
+
+.selected {
+    font-size: 2em;
 }
 
 .content-panel {
@@ -22,7 +27,9 @@
     order: 1;
     flex-basis: 80%;
 
-    padding: 10px;
+    margin: 10px;
+
+    overflow-y: scroll;
 
     display: flex;
     flex-flow: column nowrap;

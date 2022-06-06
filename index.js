@@ -10,7 +10,7 @@ const contentPanelHeader = document.getElementById('content-panel-header');
 const contentPanelBody = document.getElementById('content-panel-body');
 
 const renderEntry = (entry, text) => {
-	
+
 	const heading = document.createElement('h1');
 	var heading_text = document.createTextNode(entry.title);
 	heading.appendChild(heading_text);
@@ -34,12 +34,15 @@ const bindIndexFromJson = async (response) => {
 
 	meta_data.entries.sort(item => new Date(item.date)).reverse().forEach(entry => {
 		
-		const list_item = document.createElement("div");
+		const item = document.createElement("div");
+		item.classList.add('index-item');
+
+		item.setAttribute('x-index-title', entry.title);
 		
 		const item_text = document.createTextNode(`${entry.title} (${entry.date})`);		
-		list_item.appendChild(item_text);
+		item.appendChild(item_text);
 		
-		list_item.onclick = async () => {
+		item.onclick = async () => {
 
 			const fetchEntryRequest = new Request(`/entry/${entry.link}`, {
 				method: 'GET',
@@ -56,6 +59,16 @@ const bindIndexFromJson = async (response) => {
 
 			const onAllEntryDataAvailable = async () => {
 				const text = decoder.decode(data_buffer);
+
+				const currentlySelectedIndexItem = document.querySelectorAll(`.selected.index-item`)[0];
+				console.log(currentlySelectedIndexItem);
+				if (currentlySelectedIndexItem) {
+					currentlySelectedIndexItem.classList.remove('selected');
+				}				
+
+				const toSelect = document.querySelectorAll(`.index-item[x-index-title='${entry.title}']`)[0]
+				console.log(toSelect);
+				toSelect.classList.add('selected');
 
 				renderEntry(entry, text, content_element);
 			};
@@ -84,7 +97,7 @@ const bindIndexFromJson = async (response) => {
 			await processEntryData()
 		};		
 		
-		list_element.appendChild(list_item);
+		list_element.appendChild(item);
 	});
 }
 
