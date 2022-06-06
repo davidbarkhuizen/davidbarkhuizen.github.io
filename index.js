@@ -11,6 +11,7 @@ var index = [];
 const bindIndexFromJson = async (response) => {
 
 	const list_element = document.getElementById('nav-panel');
+	const content_element = document.getElementById('content-panel');
 
 	const entries = await response.json();
 	
@@ -33,10 +34,19 @@ const bindIndexFromJson = async (response) => {
 			const response = await fetch(fetchEntryRequest)
 			const entry_data_reader = response.body.getReader();
 
-			var all_data = '';
+			var data_buffer = new Uint8Array(0);
 
 			const onAllEntryDataAvailable = async () => {
-				console.log(all_data);
+				const text = decoder.decode(data_buffer);
+
+				content_element.textContent = '';
+
+				const content_div = document.createElement("div");
+				const content = document.createTextNode(text);
+				content_div.appendChild(content);
+
+				content_element.appendChild(content_div);
+
 			};
 
 			const decoder = new TextDecoder();
@@ -47,7 +57,10 @@ const bindIndexFromJson = async (response) => {
 				
 				const new_data = reader_rsp.value;
 				if (new_data) {
-					all_data  = all_data + decoder.decode(new_data);
+					const merged = new Uint8Array(data_buffer.length + new_data.length);
+					merged.set(data_buffer);
+					merged.set(new_data, data_buffer.length);
+					data_buffer = merged
 				}
 
 				if (reader_rsp.done) {

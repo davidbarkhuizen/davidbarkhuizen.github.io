@@ -1,8 +1,6 @@
 .container {
     min-height: 100%; 
 
-    background: green;
-    
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-start;
@@ -10,15 +8,13 @@
 }
 
 .nav-panel {
-    background: red;
+    background: lightgray;
     
     order: 0;
     flex-grow: 1;
 }
 
 .content-panel {
-    background: blue;
-    
     order: 1;
     flex-grow: 4;
 }
