@@ -1,1 +1,10 @@
-[{"title":"blog1","link":"blog1.txt"},{"title":"blog2","link":"blog2.txt"}]
+[
+    {
+        "title":"blog1",
+        "link":"blog1.txt"
+    },
+    {
+        "title":"blog2",
+        "link":"blog2.txt"
+    }
+]
