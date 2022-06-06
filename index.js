@@ -6,19 +6,20 @@ console.log(`host ${host}, origin ${origin}, path ${path}`);
 
 var GET_JSON_OPTIONS = { method: 'GET', body: 'json', headers: {} };
 
-var index = [];
-
 const bindIndexFromJson = async (response) => {
 
 	const list_element = document.getElementById('nav-panel');
 	const content_element = document.getElementById('content-panel');
 
-	const entries = await response.json();
-	
-	entries.forEach(entry => {
+	const meta_data = await response.json();
+
+	document.title = meta_data.title;
+
+	meta_data.entries.sort(item => new Date(item.date)).reverse().forEach(entry => {
 		
-		const list_item = document.createElement("li");
-		const item_text = document.createTextNode(entry.title);
+		const list_item = document.createElement("div");
+		
+		const item_text = document.createTextNode(`${entry.title} (${entry.date})`);		
 		list_item.appendChild(item_text);
 		
 		list_item.onclick = async () => {
@@ -37,16 +38,14 @@ const bindIndexFromJson = async (response) => {
 			var data_buffer = new Uint8Array(0);
 
 			const onAllEntryDataAvailable = async () => {
-				const text = decoder.decode(data_buffer);
-
-				content_element.textContent = '';
+				const text = decoder.decode(data_buffer);				
 
 				const content_div = document.createElement("div");
 				const content = document.createTextNode(text);
 				content_div.appendChild(content);
 
+				content_element.innerHTML = '';				
 				content_element.appendChild(content_div);
-
 			};
 
 			const decoder = new TextDecoder();
@@ -75,8 +74,6 @@ const bindIndexFromJson = async (response) => {
 		
 		list_element.appendChild(list_item);
 	});
-	
-	return entries;
 }
 
 function load() {
@@ -89,8 +86,7 @@ function load() {
 	});
 
 	fetch(fetchIndexRequest)
-	.then(bindIndexFromJson)
-	.then(function(j){ console.log(j); });
+	.then(bindIndexFromJson);
 }
 
 load();

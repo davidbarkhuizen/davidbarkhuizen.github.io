@@ -1,10 +1,15 @@
-[
-    {
-        "title":"blog1",
-        "link":"entry1.md"
-    },
-    {
-        "title":"blog2",
-        "link":"entry2.md"
-    }
-]
+{
+    "title": "davidbarkhuizen.github.io",
+    "entries": [
+        {
+            "title":"blog2",
+            "date": "2022/06/06",
+            "link":"entry2.md"
+        },
+        {
+            "title":"blog1",
+            "date": "2022/01/29",
+            "link":"entry1.md"
+        }
+    ]
+}

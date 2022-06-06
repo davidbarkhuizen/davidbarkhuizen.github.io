@@ -11,15 +11,22 @@
     background: lightgray;
     
     order: 0;
-    flex-grow: 1;
+    /* flex-grow: 1; */
+    flex-basis: 20%;
+
+    padding: 10px;
 }
 
 .content-panel {
     order: 1;
-    flex-grow: 4;
+    /* flex-grow: 4; */
+    flex-basis: 80%;
+    padding: 10px;
 }
 
 html, body {
     height: 100%;
     margin: 0;
+
+    font-family: monospace;
 }
