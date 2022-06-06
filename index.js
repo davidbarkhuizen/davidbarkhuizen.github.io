@@ -6,6 +6,23 @@ console.log(`host ${host}, origin ${origin}, path ${path}`);
 
 var GET_JSON_OPTIONS = { method: 'GET', body: 'json', headers: {} };
 
+const contentPanelHeader = document.getElementById('content-panel-header');
+const contentPanelBody = document.getElementById('content-panel-body');
+
+const renderEntry = (entry, text) => {
+	
+	const heading = document.createElement('h1');
+	var heading_text = document.createTextNode(entry.title);
+	heading.appendChild(heading_text);
+
+	contentPanelHeader.innerHTML = '';				
+	contentPanelHeader.appendChild(heading);
+
+	var body_text = document.createTextNode(text);
+	contentPanelBody.innerHTML = '';				
+	contentPanelBody.appendChild(body_text);
+};
+
 const bindIndexFromJson = async (response) => {
 
 	const list_element = document.getElementById('nav-panel');
@@ -38,14 +55,9 @@ const bindIndexFromJson = async (response) => {
 			var data_buffer = new Uint8Array(0);
 
 			const onAllEntryDataAvailable = async () => {
-				const text = decoder.decode(data_buffer);				
+				const text = decoder.decode(data_buffer);
 
-				const content_div = document.createElement("div");
-				const content = document.createTextNode(text);
-				content_div.appendChild(content);
-
-				content_element.innerHTML = '';				
-				content_element.appendChild(content_div);
+				renderEntry(entry, text, content_element);
 			};
 
 			const decoder = new TextDecoder();
