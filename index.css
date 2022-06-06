@@ -8,6 +8,10 @@
     align-items: stretch;
 }
 
+.selected {
+    font-size: 2em;
+}
+
 .nav-panel {
     background: lightgray;
     
@@ -16,10 +20,6 @@
 
     margin: 10px;
     overflow-y: scroll;
-}
-
-.selected {
-    font-size: 2em;
 }
 
 .content-panel {
@@ -36,21 +36,20 @@
     /* justify-content: flex-start; */
     align-items: stretch;
 
-    background-color: red;
+    /* background-color: red; */
 }
 
 .content-panel-header {
     order: 0;
-    flex-basis: 10%;
+    height: 60px;
 
-    background-color: green;
+    /* background-color: green; */
 }
 
 .content-panel-body {
     order: 1;
-    flex-basis: 90%;
 
-    background-color: yellow;
+    /* background-color: orange; */
 }
 
 html, body {

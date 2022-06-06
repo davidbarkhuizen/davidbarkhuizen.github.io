@@ -32,6 +32,8 @@ const bindIndexFromJson = async (response) => {
 
 	document.title = meta_data.title;
 
+	var selectFirst = null;
+
 	meta_data.entries.sort(item => new Date(item.date)).reverse().forEach(entry => {
 		
 		const item = document.createElement("div");
@@ -42,7 +44,7 @@ const bindIndexFromJson = async (response) => {
 		const item_text = document.createTextNode(`${entry.title} (${entry.date})`);		
 		item.appendChild(item_text);
 		
-		item.onclick = async () => {
+		const onclick = async () => {
 
 			const fetchEntryRequest = new Request(`/entry/${entry.link}`, {
 				method: 'GET',
@@ -97,8 +99,17 @@ const bindIndexFromJson = async (response) => {
 			await processEntryData()
 		};		
 		
+		item.onclick = onclick;
+		
+		if (!selectFirst) {
+			selectFirst = onclick;
+		}
+
+
 		list_element.appendChild(item);
 	});
+
+	await selectFirst();
 }
 
 function load() {
