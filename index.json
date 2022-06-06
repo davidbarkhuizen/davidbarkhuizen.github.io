@@ -1,10 +1,10 @@
 [
     {
         "title":"blog1",
-        "link":"blog1.txt"
+        "link":"entry1.md"
     },
     {
         "title":"blog2",
-        "link":"blog2.txt"
+        "link":"entry2.md"
     }
 ]

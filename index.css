@@ -1,0 +1,29 @@
+.container {
+    min-height: 100%; 
+
+    background: green;
+    
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.nav-panel {
+    background: red;
+    
+    order: 0;
+    flex-grow: 1;
+}
+
+.content-panel {
+    background: blue;
+    
+    order: 1;
+    flex-grow: 4;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
