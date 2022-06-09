@@ -4,10 +4,19 @@ var path = window.location.pathname;
 
 console.log(`host ${host}, origin ${origin}, path ${path}`);
 
-var GET_JSON_OPTIONS = { method: 'GET', body: 'json', headers: {} };
+const elementRefs = () => {
 
-const contentPanelHeader = document.getElementById('content-panel-header');
-const contentPanelBody = document.getElementById('content-panel-body');
+	const getRef = (id) => document.getElementById(id);
+
+	return {
+		contentPanel: getRef('content-panel'),
+		contentPanelHeader: getRef('content-panel-header'),
+		contentPanelBody: getRef('content-panel-body'),
+		navPanel: getRef('nav-panel')
+	};	
+};
+
+const ref = elementRefs();
 
 const CONTENT_TYPES = Object.freeze({
 	APP_JSON: 'application/json',
@@ -28,18 +37,15 @@ const renderEntry = (entry, text) => {
 	var heading_text = document.createTextNode(entry.title);
 	heading.appendChild(heading_text);
 
-	contentPanelHeader.innerHTML = '';				
-	contentPanelHeader.appendChild(heading);
+	ref.contentPanelHeader.innerHTML = '';				
+	ref.contentPanelHeader.appendChild(heading);
 
 	var body_text = document.createTextNode(text);
-	contentPanelBody.innerHTML = '';				
-	contentPanelBody.appendChild(body_text);
+	ref.contentPanelBody.innerHTML = '';				
+	ref.contentPanelBody.appendChild(body_text);
 };
 
 const bindIndexFromJsonResponse = async (response) => {
-
-	const list_element = document.getElementById('nav-panel');
-	const content_element = document.getElementById('content-panel');
 
 	const meta_data = await response.json();
 
@@ -75,7 +81,7 @@ const bindIndexFromJsonResponse = async (response) => {
 				const toSelect = document.querySelectorAll(`.index-item[x-index-title='${entry.title}']`)[0]
 				toSelect.classList.add('selected');
 
-				renderEntry(entry, text, content_element);
+				renderEntry(entry, text);
 			};
 
 			const decoder = new TextDecoder();
@@ -109,7 +115,7 @@ const bindIndexFromJsonResponse = async (response) => {
 		}
 
 
-		list_element.appendChild(item);
+		ref.navPanel.appendChild(item);
 	});
 
 	await selectFirst();
