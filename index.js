@@ -9,6 +9,19 @@ var GET_JSON_OPTIONS = { method: 'GET', body: 'json', headers: {} };
 const contentPanelHeader = document.getElementById('content-panel-header');
 const contentPanelBody = document.getElementById('content-panel-body');
 
+const CONTENT_TYPES = Object.freeze({
+	APP_JSON: 'application/json',
+	TEXT_PLAIN: 'text/plain'
+});
+
+const get = async (url, content_type) =>
+	fetch(new Request(url, {
+		method: 'GET',
+		headers: new Headers({
+			'Content-Type': content_type
+		})
+	}));
+
 const renderEntry = (entry, text) => {
 
 	const heading = document.createElement('h1');
@@ -23,7 +36,7 @@ const renderEntry = (entry, text) => {
 	contentPanelBody.appendChild(body_text);
 };
 
-const bindIndexFromJson = async (response) => {
+const bindIndexFromJsonResponse = async (response) => {
 
 	const list_element = document.getElementById('nav-panel');
 	const content_element = document.getElementById('content-panel');
@@ -45,16 +58,8 @@ const bindIndexFromJson = async (response) => {
 		item.appendChild(item_text);
 		
 		const onclick = async () => {
-
-			const fetchEntryRequest = new Request(`/entry/${entry.link}`, {
-				method: 'GET',
-				headers: new Headers({
-					'Content-Type': 'text/plain'
-				})
-			});
-			
 		
-			const response = await fetch(fetchEntryRequest)
+			const response = await get(`/entry/${entry.link}`, CONTENT_TYPES.TEXT_PLAIN);
 			const entry_data_reader = response.body.getReader();
 
 			var data_buffer = new Uint8Array(0);
@@ -63,13 +68,11 @@ const bindIndexFromJson = async (response) => {
 				const text = decoder.decode(data_buffer);
 
 				const currentlySelectedIndexItem = document.querySelectorAll(`.selected.index-item`)[0];
-				console.log(currentlySelectedIndexItem);
 				if (currentlySelectedIndexItem) {
 					currentlySelectedIndexItem.classList.remove('selected');
 				}				
 
 				const toSelect = document.querySelectorAll(`.index-item[x-index-title='${entry.title}']`)[0]
-				console.log(toSelect);
 				toSelect.classList.add('selected');
 
 				renderEntry(entry, text, content_element);
@@ -112,17 +115,8 @@ const bindIndexFromJson = async (response) => {
 	await selectFirst();
 }
 
-function load() {
+const enter = () => 
+	get('index.json', CONTENT_TYPES.APP_JSON)
+	.then(bindIndexFromJsonResponse);
 
-	const fetchIndexRequest = new Request('index.json', {
-		method: 'GET',
-		headers: new Headers({
-			'Content-Type': 'application/json'
-		})
-	});
-
-	fetch(fetchIndexRequest)
-	.then(bindIndexFromJson);
-}
-
-load();
+enter();
