@@ -30,26 +30,6 @@
     margin: 10px;
 
     overflow-y: scroll;
-
-    display: flex;
-    flex-flow: column nowrap;
-    /* justify-content: flex-start; */
-    align-items: stretch;
-
-    /* background-color: red; */
-}
-
-.content-panel-header {
-    order: 0;
-    height: 60px;
-
-    /* background-color: green; */
-}
-
-.content-panel-body {
-    order: 1;
-
-    /* background-color: orange; */
 }
 
 html, body {

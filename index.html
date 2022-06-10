@@ -8,11 +8,10 @@
     <script type="module">
       var commonmark = window.commonmark;
       var writer = new commonmark.HtmlRenderer({ sourcepos: true });
-      var htmlwriter = new commonmark.HtmlRenderer({ sourcepos: false });
-      var xmlwriter = new commonmark.XmlRenderer({ sourcepos: false });
-      var reader = new commonmark.Parser();
-      console.log('sss');
-      window.enter(reader, htmlwriter);
+      window.enter(
+        new commonmark.Parser(), 
+        new commonmark.HtmlRenderer({ sourcepos: false })
+      );
     </script>
 
     <link rel="stylesheet" href="index.css">  
@@ -24,6 +23,9 @@
       <div id="content-panel" class="content-panel">
         <div id="content-panel-header" class="content-panel-header">
         </div> 
+        <div>
+          <br/>
+        </div>
         <div id="content-panel-body" class="content-panel-body">
         </div>        
       </div>        

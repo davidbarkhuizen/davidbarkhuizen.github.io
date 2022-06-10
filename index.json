@@ -3,11 +3,15 @@
     "entries": [
         {
             "title":"blog2",
+            "summary": "one two three four",
+            "keywords": ["key1", "key2"],
             "date": "2022/06/06",
             "link":"entry2.md"
         },
         {
             "title":"blog1",
+            "summary": "five six seven eight",
+            "keywords": ["key3"],
             "date": "2022/01/29",
             "link":"entry1.md"
         }

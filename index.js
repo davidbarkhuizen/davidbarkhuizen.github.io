@@ -31,14 +31,21 @@ const get = async (url, content_type) =>
 		})
 	}));
 
+const renderEntryHeader = (title, summary, keywords, date) =>
+`<div>
+	<div>${date}: ${title}</div>
+	<div>${summary}</div>
+	<div>[${keywords.join(', ')}]</div>
+</div>`;
+
 const renderEntry = (entry, text, mdReader, mdWriter) => {
 
-	const heading = document.createElement('h1');
-	var heading_text = document.createTextNode(entry.title);
-	heading.appendChild(heading_text);
-
-	element.contentPanelHeader.innerHTML = '';				
-	element.contentPanelHeader.appendChild(heading);
+	element.contentPanelHeader.innerHTML = renderEntryHeader(
+		entry.title,
+		entry.summary,
+		entry.keywords,
+		entry.date
+	);				
 
 	var parsed = mdReader.parse(text);
 	var renderedHTML = mdWriter.render(parsed);
