@@ -4,7 +4,7 @@ var path = window.location.pathname;
 
 console.log(`host ${host}, origin ${origin}, path ${path}`);
 
-const elementRefs = () => {
+const getElementRefs = () => {
 
 	const getRef = (id) => document.getElementById(id);
 
@@ -16,7 +16,7 @@ const elementRefs = () => {
 	};	
 };
 
-const ref = elementRefs();
+const element = getElementRefs();
 
 const CONTENT_TYPES = Object.freeze({
 	APP_JSON: 'application/json',
@@ -37,12 +37,12 @@ const renderEntry = (entry, text) => {
 	var heading_text = document.createTextNode(entry.title);
 	heading.appendChild(heading_text);
 
-	ref.contentPanelHeader.innerHTML = '';				
-	ref.contentPanelHeader.appendChild(heading);
+	element.contentPanelHeader.innerHTML = '';				
+	element.contentPanelHeader.appendChild(heading);
 
 	var body_text = document.createTextNode(text);
-	ref.contentPanelBody.innerHTML = '';				
-	ref.contentPanelBody.appendChild(body_text);
+	element.contentPanelBody.innerHTML = '';				
+	element.contentPanelBody.appendChild(body_text);
 };
 
 const bindIndexFromJsonResponse = async (response) => {
@@ -115,7 +115,7 @@ const bindIndexFromJsonResponse = async (response) => {
 		}
 
 
-		ref.navPanel.appendChild(item);
+		element.navPanel.appendChild(item);
 	});
 
 	await selectFirst();
