@@ -33,12 +33,12 @@ const get = async (url, content_type) =>
 
 const renderEntryHeader = (title, summary, keywords, date) =>
 `<div>
-	<div>${date}: ${title}</div>
+	<div>${date} [${keywords.join(', ')}]</div>
+	<div>${title}</div>
 	<div>${summary}</div>
-	<div>[${keywords.join(', ')}]</div>
 </div>`;
 
-const renderEntry = (entry, text, mdReader, mdWriter) => {
+const renderAndSetEntry = (entry, text, mdReader, mdWriter) => {
 
 	element.contentPanelHeader.innerHTML = renderEntryHeader(
 		entry.title,
@@ -54,17 +54,21 @@ const renderEntry = (entry, text, mdReader, mdWriter) => {
 
 const renderIndexItem = (entry, mdReader, mdWriter) => {
 
-	const item = document.createElement("div");
-	item.classList.add('index-item');
+	const tooltip = 
+`${entry.date} [${entry.keywords.join(', ')}]
+${entry.title}
+${entry.summary}
+`;
 
-	item.setAttribute('x-index-title', entry.title);
-	
-	const item_text = document.createTextNode(`${entry.title} (${entry.date})`);		
-	item.appendChild(item_text);
-	
+	const template = 
+`<div class="index-item" x-index-title="${entry.title}" title="${tooltip}">
+	<span>${entry.title}<span>
+</div>`;
+
 	const onclick = async () => {
 	
-		const response = await get(`/entry/${entry.link}`, CONTENT_TYPES.TEXT_PLAIN);
+		const response = await get(`/entries/${entry.link}`, CONTENT_TYPES.TEXT_PLAIN);
+		
 		const entry_data_reader = response.body.getReader();
 
 		var data_buffer = new Uint8Array(0);
@@ -80,7 +84,7 @@ const renderIndexItem = (entry, mdReader, mdWriter) => {
 			const toSelect = document.querySelectorAll(`.index-item[x-index-title='${entry.title}']`)[0]
 			toSelect.classList.add('selected');
 
-			renderEntry(entry, text, mdReader, mdWriter);
+			renderAndSetEntry(entry, text, mdReader, mdWriter);
 		};
 
 		const decoder = new TextDecoder();
@@ -106,9 +110,10 @@ const renderIndexItem = (entry, mdReader, mdWriter) => {
 
 		await processEntryData()
 	};		
-	
+
+	const item = document.createElement('div');
+	item.innerHTML = template;
 	item.onclick = onclick;
-	
 	element.navPanel.appendChild(item);
 
 	return onclick;

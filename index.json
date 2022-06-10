@@ -2,6 +2,13 @@
     "title": "davidbarkhuizen.github.io",
     "entries": [
         {
+            "title":"#TODO",
+            "summary": "development task backlog",
+            "keywords": ["yoctoblog"],
+            "date": "2022/06/10",
+            "link":"todo.md"
+        },
+        {
             "title":"blog2",
             "summary": "one two three four",
             "keywords": ["key1", "key2"],
@@ -9,11 +16,11 @@
             "link":"entry2.md"
         },
         {
-            "title":"blog1",
-            "summary": "five six seven eight",
-            "keywords": ["key3"],
-            "date": "2022/01/29",
-            "link":"entry1.md"
+            "title":"yoctoblog",
+            "summary": "markdown blogging on github.io with yoctoblog",
+            "keywords": ["yoctoblog", "blog", "microproduct"],
+            "date": "2022/06/18",
+            "link":"yoctoblog.md"
         }
     ]
 }

@@ -1,0 +1,3 @@
+# yoctoblog
+
+the smallest blog
