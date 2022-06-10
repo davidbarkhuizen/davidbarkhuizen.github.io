@@ -31,7 +31,7 @@ const get = async (url, content_type) =>
 		})
 	}));
 
-const renderEntry = (entry, text) => {
+const renderEntry = (entry, text, mdReader, mdWriter) => {
 
 	const heading = document.createElement('h1');
 	var heading_text = document.createTextNode(entry.title);
@@ -40,89 +40,93 @@ const renderEntry = (entry, text) => {
 	element.contentPanelHeader.innerHTML = '';				
 	element.contentPanelHeader.appendChild(heading);
 
-	var body_text = document.createTextNode(text);
-	element.contentPanelBody.innerHTML = '';				
-	element.contentPanelBody.appendChild(body_text);
+	var parsed = mdReader.parse(text);
+	var renderedHTML = mdWriter.render(parsed);
+	element.contentPanelBody.innerHTML = renderedHTML;				
 };
 
-const bindIndexFromJsonResponse = async (response) => {
+const renderIndexItem = (entry, mdReader, mdWriter) => {
 
-	const meta_data = await response.json();
+	const item = document.createElement("div");
+	item.classList.add('index-item');
 
-	document.title = meta_data.title;
+	item.setAttribute('x-index-title', entry.title);
+	
+	const item_text = document.createTextNode(`${entry.title} (${entry.date})`);		
+	item.appendChild(item_text);
+	
+	const onclick = async () => {
+	
+		const response = await get(`/entry/${entry.link}`, CONTENT_TYPES.TEXT_PLAIN);
+		const entry_data_reader = response.body.getReader();
 
-	var selectFirst = null;
+		var data_buffer = new Uint8Array(0);
 
-	meta_data.entries.sort(item => new Date(item.date)).reverse().forEach(entry => {
-		
-		const item = document.createElement("div");
-		item.classList.add('index-item');
+		const onAllEntryDataAvailable = async () => {
+			const text = decoder.decode(data_buffer);
 
-		item.setAttribute('x-index-title', entry.title);
-		
-		const item_text = document.createTextNode(`${entry.title} (${entry.date})`);		
-		item.appendChild(item_text);
-		
-		const onclick = async () => {
-		
-			const response = await get(`/entry/${entry.link}`, CONTENT_TYPES.TEXT_PLAIN);
-			const entry_data_reader = response.body.getReader();
+			const currentlySelectedIndexItem = document.querySelectorAll(`.selected.index-item`)[0];
+			if (currentlySelectedIndexItem) {
+				currentlySelectedIndexItem.classList.remove('selected');
+			}				
 
-			var data_buffer = new Uint8Array(0);
+			const toSelect = document.querySelectorAll(`.index-item[x-index-title='${entry.title}']`)[0]
+			toSelect.classList.add('selected');
 
-			const onAllEntryDataAvailable = async () => {
-				const text = decoder.decode(data_buffer);
+			renderEntry(entry, text, mdReader, mdWriter);
+		};
 
-				const currentlySelectedIndexItem = document.querySelectorAll(`.selected.index-item`)[0];
-				if (currentlySelectedIndexItem) {
-					currentlySelectedIndexItem.classList.remove('selected');
-				}				
+		const decoder = new TextDecoder();
 
-				const toSelect = document.querySelectorAll(`.index-item[x-index-title='${entry.title}']`)[0]
-				toSelect.classList.add('selected');
+		const processEntryData = async () => {
 
-				renderEntry(entry, text);
-			};
-
-			const decoder = new TextDecoder();
-
-			const processEntryData = async () => {
-
-				const reader_rsp = await entry_data_reader.read();
-				
-				const new_data = reader_rsp.value;
-				if (new_data) {
-					const merged = new Uint8Array(data_buffer.length + new_data.length);
-					merged.set(data_buffer);
-					merged.set(new_data, data_buffer.length);
-					data_buffer = merged
-				}
-
-				if (reader_rsp.done) {
-					await onAllEntryDataAvailable();
-				} else {
-					await processEntryData();
-				}
+			const reader_rsp = await entry_data_reader.read();
+			
+			const new_data = reader_rsp.value;
+			if (new_data) {
+				const merged = new Uint8Array(data_buffer.length + new_data.length);
+				merged.set(data_buffer);
+				merged.set(new_data, data_buffer.length);
+				data_buffer = merged
 			}
 
-			await processEntryData()
-		};		
-		
-		item.onclick = onclick;
-		
-		if (!selectFirst) {
-			selectFirst = onclick;
+			if (reader_rsp.done) {
+				await onAllEntryDataAvailable();
+			} else {
+				await processEntryData();
+			}
 		}
 
+		await processEntryData()
+	};		
+	
+	item.onclick = onclick;
+	
+	element.navPanel.appendChild(item);
 
-		element.navPanel.appendChild(item);
-	});
+	return onclick;
+};
 
-	await selectFirst();
+const bindMetaData = (metaData, mdReader, mdWriter) => {
+
+	document.title = metaData.title;
+
+	return metaData.entries
+		.sort(item => new Date(item.date))
+		.reverse()
+		.map(entry => renderIndexItem(entry, mdReader, mdWriter));
 }
 
-const enter = () => 
-	get('index.json', CONTENT_TYPES.APP_JSON)
-	.then(bindIndexFromJsonResponse);
+const fetchinitialDataModel = async () => { 
+	const rsp = await get('index.json', CONTENT_TYPES.APP_JSON);
+	return await rsp.json();
+};
 
-enter();
+const enter = (mdReader, mdWriter) => 
+	fetchinitialDataModel()
+	.then((data) => bindMetaData(data, mdReader, mdWriter))
+	.then((onclicks) => onclicks[0]());
+
+// enter();
+
+window.enter = enter;

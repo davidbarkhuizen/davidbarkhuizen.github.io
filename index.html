@@ -2,7 +2,19 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <script type="text/javascript" src="index.js" async></script>
+    <script type="module" src="commonmark.js"></script>
+    <script type="module" src="index.js"></script>
+
+    <script type="module">
+      var commonmark = window.commonmark;
+      var writer = new commonmark.HtmlRenderer({ sourcepos: true });
+      var htmlwriter = new commonmark.HtmlRenderer({ sourcepos: false });
+      var xmlwriter = new commonmark.XmlRenderer({ sourcepos: false });
+      var reader = new commonmark.Parser();
+      console.log('sss');
+      window.enter(reader, htmlwriter);
+    </script>
+
     <link rel="stylesheet" href="index.css">  
   </head>
   <body>
