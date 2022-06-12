@@ -5,7 +5,6 @@ var path = window.location.pathname;
 console.log(`host ${host}, origin ${origin}, path ${path}`);
 
 var dataModel = null;
-const onClicks = [];
 
 const getElementRefs = () => {
 
@@ -57,7 +56,7 @@ const renderAndSetEntry = (entry, text, mdReader, mdWriter) => {
 
 const onclick = async (entry, mdReader, mdWriter) => {
 	
-	const response = await get(`/entries/${entry.url}`, CONTENT_TYPES.TEXT_PLAIN);
+	const response = await get(`/entries/${entry.fileName}`, CONTENT_TYPES.TEXT_PLAIN);
 	
 	const entry_data_reader = response.body.getReader();
 
@@ -117,12 +116,8 @@ ${entry.summary}
 	const item = document.createElement('div');
 	item.innerHTML = template;
 	
-	const itemOnClick = () => { onclick(entry, mdReader, mdWriter); };
-	
-	item.onclick = itemOnClick;
+	item.onclick = () => { onclick(entry, mdReader, mdWriter); };
 	element.navPanel.appendChild(item);
-
-	onClicks.push(itemOnClick);
 };
 
 const renderNavPanel = (dataModel, mdReader, mdWriter) => {
@@ -131,19 +126,19 @@ const renderNavPanel = (dataModel, mdReader, mdWriter) => {
 		.map(entry => renderIndexItem(entry, mdReader, mdWriter));
 };
 
-const bindDataModel = (dataModel, mdReader, mdWriter) => {
+const bindDataModel = (pDataModel, mdReader, mdWriter) => {
 
-	document.title = dataModel.title;
+	document.title = pDataModel.title;
 
-	dataModel.entries.sort(item => new Date(item.date))
+	pDataModel.entries.sort(item => new Date(item.date))
 
-	dataModel.entries
+	pDataModel.entries
 		.sort(item => new Date(item.date))
 		.reverse();
 
-	window.dataModel = dataModel;
+	dataModel = pDataModel;
 
-	renderNavPanel(dataModel, mdReader, mdWriter);
+	renderNavPanel(pDataModel, mdReader, mdWriter);
 }
 
 const fetchDataModel = async () => { 
@@ -151,17 +146,21 @@ const fetchDataModel = async () => {
 	return await rsp.json();
 };
 
-const processQueryString = async () => {
+const processQueryString = async (mdReader, mdWriter) => {
+
+	let params = (new URL(document.location)).searchParams;
+	let fileName = params.get("fileName");
 	
-	
-	
-	
-	onClicks[0]();
+	const entry = dataModel.entries.find(it => it.fileName == fileName);
+
+	if (entry) {
+		onclick(entry, mdReader, mdWriter)
+	}	
 };
 
 const enter = (mdReader, mdWriter) => 
 	fetchDataModel()
 	.then((dataModel) => bindDataModel(dataModel, mdReader, mdWriter))
-	.then(processQueryString);
+	.then(() => processQueryString(mdReader, mdWriter));
 
 window.enter = enter;

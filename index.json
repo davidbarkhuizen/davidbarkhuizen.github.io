@@ -6,21 +6,21 @@
             "summary": "development task backlog",
             "keywords": ["yoctoblog"],
             "date": "2022/06/10",
-            "url":"todo.md"
+            "fileName":"todo.md"
         },
         {
             "title":"blog2",
             "summary": "one two three four",
             "keywords": ["key1", "key2"],
             "date": "2022/06/06",
-            "url":"entry2.md"
+            "fileName":"entry2.md"
         },
         {
             "title":"yoctoblog",
             "summary": "markdown blogging on github.io with yoctoblog",
             "keywords": ["yoctoblog", "blog", "microproduct"],
             "date": "2022/06/18",
-            "url":"yoctoblog.md"
+            "fileName":"yoctoblog.md"
         }
     ]
 }
