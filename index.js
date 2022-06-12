@@ -1,9 +1,3 @@
-var host = window.location.host;
-var origin = window.location.origin;
-var path = window.location.pathname;
-
-console.log(`host ${host}, origin ${origin}, path ${path}`);
-
 var dataModel = null;
 
 const getElementRefs = () => {
@@ -25,11 +19,13 @@ const CONTENT_TYPES = Object.freeze({
 	TEXT_PLAIN: 'text/plain'
 });
 
-const get = async (url, content_type) =>
+const httpGET = async (url, content_type) =>
 	fetch(new Request(url, {
 		method: 'GET',
 		headers: new Headers({
-			'Content-Type': content_type
+			'Content-Type': content_type,
+			'pragma' : 'no-cache',
+			'cache-control': 'no-cache'
 		})
 	}));
 
@@ -56,14 +52,12 @@ const renderAndSetEntry = (entry, text, mdReader, mdWriter) => {
 
 const onclick = async (entry, mdReader, mdWriter, push = true) => {
 	
-	const response = await get(`/entries/${entry.fileName}`, CONTENT_TYPES.TEXT_PLAIN);
+	const response = await httpGET(`/entries/${entry.fileName}`, CONTENT_TYPES.TEXT_PLAIN);
 	
 	if (push) {
 		var searchParams = new URLSearchParams(window.location.search)
 		searchParams.set("fileName", entry.fileName);
 		var newRelativePathQuery = window.location.pathname + '?' + searchParams.toString();
-		
-		console.log('pushing', entry.fileName);
 		history.pushState(entry.fileName, '', newRelativePathQuery);
 	}
 
@@ -151,7 +145,7 @@ const bindDataModel = (pDataModel, mdReader, mdWriter) => {
 }
 
 const fetchDataModel = async () => { 
-	const rsp = await get('index.json', CONTENT_TYPES.APP_JSON);
+	const rsp = await httpGET('index.json', CONTENT_TYPES.APP_JSON);
 	return await rsp.json();
 };
 

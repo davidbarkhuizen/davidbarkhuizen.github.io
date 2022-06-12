@@ -1,3 +1,3 @@
 # yoctoblog
 
-the smallest blog
+blog in commonmark markdown on github.io with yoctoblog
