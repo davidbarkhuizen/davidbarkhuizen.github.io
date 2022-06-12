@@ -50,9 +50,9 @@ const renderAndSetEntry = (entry, text, mdReader, mdWriter) => {
 	element.contentPanelBody.innerHTML = renderedHTML;				
 };
 
-const onclick = async (entry, mdReader, mdWriter, push = true) => {
+const onclick = async (filePathRoot, entry, mdReader, mdWriter, push = true) => {
 	
-	const response = await httpGET(`/entries/${entry.fileName}`, CONTENT_TYPES.TEXT_PLAIN);
+	const response = await httpGET(`${filePathRoot}${entry.fileName}`, CONTENT_TYPES.TEXT_PLAIN);
 	
 	if (push) {
 		var searchParams = new URLSearchParams(window.location.search)
@@ -103,7 +103,7 @@ const onclick = async (entry, mdReader, mdWriter, push = true) => {
 	await processEntryData()
 };
 
-const renderIndexItem = (entry, mdReader, mdWriter) => {
+const renderIndexItem = (filePathRoot, entry, mdReader, mdWriter) => {
 
 	const tooltip = 
 `${entry.date} [${entry.keywords.join(', ')}]
@@ -113,20 +113,20 @@ ${entry.summary}
 
 	const template = 
 `<div class="index-item" x-index-title="${entry.title}" title="${tooltip}">
-	<a href="/entries/${entry.fileName}" onclick="return false;">${entry.title}</a>
+	<a href="${filePathRoot}${entry.fileName}" onclick="return false;">${entry.title}</a>
 </div>`;	
 
 	const item = document.createElement('div');
 	item.innerHTML = template;
 	
-	item.onclick = () => { onclick(entry, mdReader, mdWriter, true); };
+	item.onclick = () => { onclick(filePathRoot, entry, mdReader, mdWriter, true); };
 	element.navPanel.appendChild(item);
 };
 
 const renderNavPanel = (dataModel, mdReader, mdWriter) => {
 
 	dataModel.entries
-		.map(entry => renderIndexItem(entry, mdReader, mdWriter));
+		.map(entry => renderIndexItem(dataModel.filePathRoot, entry, mdReader, mdWriter));
 };
 
 const bindDataModel = (pDataModel, mdReader, mdWriter) => {
@@ -153,7 +153,7 @@ const loadFileName = async (fileName, mdReader, mdWriter, push) => {
 	const entry = dataModel.entries.find(it => it.fileName == fileName);
 
 	if (entry) {
-		onclick(entry, mdReader, mdWriter, push)
+		onclick(dataModel.filePathRoot, entry, mdReader, mdWriter, push)
 	}	
 };
 
