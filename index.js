@@ -54,10 +54,19 @@ const renderAndSetEntry = (entry, text, mdReader, mdWriter) => {
 	element.contentPanelBody.innerHTML = renderedHTML;				
 };
 
-const onclick = async (entry, mdReader, mdWriter) => {
+const onclick = async (entry, mdReader, mdWriter, push = true) => {
 	
 	const response = await get(`/entries/${entry.fileName}`, CONTENT_TYPES.TEXT_PLAIN);
 	
+	if (push) {
+		var searchParams = new URLSearchParams(window.location.search)
+		searchParams.set("fileName", entry.fileName);
+		var newRelativePathQuery = window.location.pathname + '?' + searchParams.toString();
+		
+		console.log('pushing', entry.fileName);
+		history.pushState(entry.fileName, '', newRelativePathQuery);
+	}
+
 	const entry_data_reader = response.body.getReader();
 
 	var data_buffer = new Uint8Array(0);
@@ -110,13 +119,13 @@ ${entry.summary}
 
 	const template = 
 `<div class="index-item" x-index-title="${entry.title}" title="${tooltip}">
-	<span>${entry.title}<span>
+	<a href="/entries/${entry.fileName}" onclick="return false;">${entry.title}</a>
 </div>`;	
 
 	const item = document.createElement('div');
 	item.innerHTML = template;
 	
-	item.onclick = () => { onclick(entry, mdReader, mdWriter); };
+	item.onclick = () => { onclick(entry, mdReader, mdWriter, true); };
 	element.navPanel.appendChild(item);
 };
 
@@ -146,21 +155,31 @@ const fetchDataModel = async () => {
 	return await rsp.json();
 };
 
+const loadFileName = async (fileName, mdReader, mdWriter, push) => {
+	const entry = dataModel.entries.find(it => it.fileName == fileName);
+
+	if (entry) {
+		onclick(entry, mdReader, mdWriter, push)
+	}	
+};
+
 const processQueryString = async (mdReader, mdWriter) => {
 
 	let params = (new URL(document.location)).searchParams;
 	let fileName = params.get("fileName");
 	
-	const entry = dataModel.entries.find(it => it.fileName == fileName);
-
-	if (entry) {
-		onclick(entry, mdReader, mdWriter)
-	}	
+	await loadFileName(fileName, mdReader, mdWriter);
 };
 
 const enter = (mdReader, mdWriter) => 
 	fetchDataModel()
 	.then((dataModel) => bindDataModel(dataModel, mdReader, mdWriter))
+	.then(() => {
+		addEventListener('popstate', event => {
+			// TODO retrieve from cache, do not make new server request
+			loadFileName(event.state, mdReader, mdWriter, false);
+		})
+	})
 	.then(() => processQueryString(mdReader, mdWriter));
 
 window.enter = enter;
